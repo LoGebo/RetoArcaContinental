@@ -1,5 +1,18 @@
 <template>
   <div class="scanner-screen">
+    <div class="relative h-screen bg-black flex flex-col justify-center items-center">
+      
+      <!-- UI Scanner Frame -->
+      <div class="relative w-3/4 h-3/4 flex items-center justify-center">
+        <div class="qr-frame border-2 border-green-500 w-80 h-80 relative">
+          <div class="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-green-500"></div>
+          <QrcodeStream @decode="onScanSuccess" @init="onScanInit" @error="onScanError" />
+          <div class="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-green-500"></div>
+          <div class="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-green-500"></div>
+          <div class="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-green-500"></div>
+          <div class="scan-line"></div>
+        </div>
+      </div>
     <div class="relative h-[70vh] bg-black flex items-center justify-center">
       <div id="reader" class="w-full h-full"></div>
     </div>
@@ -29,11 +42,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Floating Button to Activate Scanner -->
-    <button @click="toggleScanner" class="fixed bottom-24 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg">
-      <CameraIcon class="h-6 w-6" />
-    </button>
   </div>
 </template>
 
@@ -41,7 +49,6 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
-const scannerActive = ref(false);
 const showNotification = ref(false);
 const scannedCode = ref("");
 let html5QrcodeScanner;
@@ -102,7 +109,7 @@ onBeforeUnmount(() => {
 <style>
 .scan-line {
   position: absolute;
-  height: 2px;
+  height: 3px;
   width: 100%;
   background: #3CB371;
   top: 0;
