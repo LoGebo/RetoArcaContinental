@@ -1,13 +1,12 @@
 <template>
   <div class="scanner-screen">
     <div class="relative h-[70vh] bg-black">
-      <!-- Barcode Scanner -->
-      <barcode-stream v-if="scannerActive" @decode="onScanSuccess" @error="onScanError" />
 
       <!-- UI Scanner Frame -->
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="qr-frame border-2 border-green-500 w-64 h-64 relative">
-          <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500"></div>
+            <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500"></div>
+            <QrcodeStream @decode="onScanSuccess" @init="onScanInit" @error="onScanError" />
           <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500"></div>
           <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500"></div>
           <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500"></div>
@@ -51,6 +50,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { QrcodeStream } from "vue-qrcode-reader";
 
 const scannerActive = ref(false);
 const showNotification = ref(false);
