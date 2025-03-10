@@ -1,23 +1,12 @@
 <template>
   <div class="scanner-screen">
-    <div class="relative h-[70vh] bg-black">
+    <div class="relative h-[70vh] bg-black flex items-center justify-center">
+      <div id="reader" class="w-full h-full"></div>
+    </div>
 
-      <!-- UI Scanner Frame -->
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="qr-frame border-2 border-green-500 w-64 h-64 relative">
-            <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500"></div>
-            <QrcodeStream @decode="onScanSuccess" @init="onScanInit" @error="onScanError" />
-          <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500"></div>
-          <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500"></div>
-          <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500"></div>
-          <div class="scan-line"></div>
-        </div>
-      </div>
-
-      <!-- Instructions -->
-      <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-4">
-        <p class="text-center">Escanea el código de barras del envase</p>
-      </div>
+    <!-- Instructions -->
+    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-4">
+      <p class="text-center">Escanea el código QR</p>
     </div>
 
     <!-- Notification Popup -->
@@ -27,7 +16,7 @@
           <CheckCircleIcon class="h-6 w-6 text-green-600" />
         </div>
         <div class="flex-1">
-          <h3 class="font-bold">¡Envase válido detectado!</h3>
+          <h3 class="font-bold">¡Código QR detectado!</h3>
           <p class="text-sm text-gray-600">Código: {{ scannedCode }}</p>
         </div>
         <button @click="showNotification = false" class="text-gray-400 hover:text-gray-600">
@@ -36,7 +25,7 @@
       </div>
       <div class="mt-3">
         <button @click="processContainer" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg">
-          Procesar envase
+          Procesar código
         </button>
       </div>
     </div>
@@ -49,24 +38,46 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { QrcodeStream } from "vue-qrcode-reader";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const scannerActive = ref(false);
 const showNotification = ref(false);
 const scannedCode = ref("");
+let html5QrcodeScanner;
 
 const toggleScanner = () => {
   scannerActive.value = !scannerActive.value;
+  if (scannerActive.value) {
+    startScanner();
+  } else {
+    stopScanner();
+  }
 };
 
-const onScanSuccess = (code) => {
-  scannedCode.value = code;
+const startScanner = () => {
+  html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader",
+    { fps: 10, qrbox: 250 },
+    false
+  );
+  html5QrcodeScanner.render(onScanSuccess, onScanError);
+};
+
+const stopScanner = () => {
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.clear();
+  }
+};
+
+const onScanSuccess = (decodedText) => {
+  scannedCode.value = decodedText;
   showNotification.value = true;
   scannerActive.value = false; // Stop scanner after detection
+  stopScanner();
 
-  // Redirect to a URL or handle scan result
-  window.location.href = `https://www.google.com/search?q=${code}`;
+  // Redirect to the scanned URL
+  window.location.href = decodedText;
 };
 
 const onScanError = (error) => {
@@ -76,6 +87,16 @@ const onScanError = (error) => {
 const processContainer = () => {
   showNotification.value = false;
 };
+
+onMounted(() => {
+  if (scannerActive.value) {
+    startScanner();
+  }
+});
+
+onBeforeUnmount(() => {
+  stopScanner();
+});
 </script>
 
 <style>
