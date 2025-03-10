@@ -1,7 +1,7 @@
 <template>
   <div class="scanner-screen">
     <div class="relative h-[70vh] bg-black flex items-center justify-center">
-      <div id="reader" class="w-full h-full"></div>
+      <div id="reader" class="w-full h-full max-w-md"></div>
     </div>
 
     <!-- Instructions -->
@@ -29,11 +29,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Floating Button to Activate Scanner -->
-    <button @click="toggleScanner" class="fixed bottom-24 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg">
-      <CameraIcon class="h-6 w-6" />
-    </button>
   </div>
 </template>
 
@@ -41,24 +36,15 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
-const scannerActive = ref(false);
+const scannerActive = ref(true);
 const showNotification = ref(false);
 const scannedCode = ref("");
 let html5QrcodeScanner;
 
-const toggleScanner = () => {
-  scannerActive.value = !scannerActive.value;
-  if (scannerActive.value) {
-    startScanner();
-  } else {
-    stopScanner();
-  }
-};
-
 const startScanner = () => {
   html5QrcodeScanner = new Html5QrcodeScanner(
     "reader",
-    { fps: 10, qrbox: 250 },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
     false
   );
   html5QrcodeScanner.render(onScanSuccess, onScanError);
