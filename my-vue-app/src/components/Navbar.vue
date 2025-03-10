@@ -1,5 +1,5 @@
 <template>
-  <nav class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 shadow-md">
+  <nav class="bg-gradient-to-r from-green-600 to-green-500 text-white p-4 shadow-md">
     <div class="flex justify-between items-center">
       <div class="flex items-center">
         <RecycleIcon class="h-6 w-6 mr-2" />
